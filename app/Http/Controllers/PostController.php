@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreUpdatePost;
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
@@ -28,8 +30,18 @@ class PostController extends Controller
    public function store(StoreUpdatePost $request)
    {
 
-   		$post = Post::create($request->all());
+   		$data = $request->all();
+
+   		if ($request->image->isValid()):
+
+   		$name_file = Str::of($request->title)->slug('-') . '.' . $request->image->getClientOriginalExtension();
+   		$image = $request->image->StoreAs('posts', $name_file);		
+   		$data['image'] = $image;
+
+   		$post = Post::create($data);
    		return redirect()->route('posts.index')->with('message','Post criado com sucesso!');
+
+   		endif;
 
    }
 
@@ -49,6 +61,10 @@ class PostController extends Controller
    {
 
    		if ($post = Post::find($id)):
+   		if (Storage::exists($post->image)):
+   			Storage::delete($post->image);
+   		endif;
+   		
    			$post->delete();
    			return redirect()->route('posts.index')->with('message','Post deletado com sucesso!');
    		else:
@@ -75,8 +91,24 @@ class PostController extends Controller
    {
 
    		if ($post = Post::find($id)):
-	   		$post->update($request->all());
-	   		return redirect()->route('posts.index')->with('message','Post editado com sucesso!');
+	
+	   	$data = $request->all();
+
+   		if ($request->image->isValid()):
+
+   		if (Storage::exists($post->image)):
+   			Storage::delete($post->image);
+   		endif;
+
+   		$name_file = Str::of($request->title)->slug('-') . '.' . $request->image->getClientOriginalExtension();
+   		$image = $request->image->StoreAs('posts', $name_file);		
+   		$data['image'] = $image;
+
+   		$post->update($data);
+   		return redirect()->route('posts.index')->with('message','Post editado com sucesso!');
+
+   		endif;
+
    		else:
    			return redirect()->route('posts.index')->with('message','Esta postagem não foi encontrada...');
    		endif;

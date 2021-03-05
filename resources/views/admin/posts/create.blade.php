@@ -1,3 +1,6 @@
+@extends('admin.layouts.app')
+@section('title', 'Criar Novo Post')
+@push('styles')
 <style type="text/css">
 	body { font-family: 'Nunito', sans-serif; background: #f9f9f9; }
 	.container { position: absolute; left: 50%; transform: translateX(-50%); width: 500px; }
@@ -23,34 +26,47 @@
 	form label { font-size: 16px; font-weight: 500; }
 
 </style>
-
-<div class="navbar">
-	<a href="{{ route('posts.index') }}"> Voltar </a>
-</div>
-<hr>
-<br>
+@endpush
 
 
+@section('content')
+		<div class="navbar">
+			<a href="{{ route('posts.index') }}"> Voltar </a>
+		</div>
+		<hr>
+		<br>
 
-<hr>
-<br>
-<div class="container">
-<h2> Criar nova postagem </h2>
- <form method="post" action="{{ route('posts.store') }}">
-	 	@csrf	
-	 	<label for="title"> Título: </label>
-		<input type="text" name="title" id="title" placeholder="Título" value="{{ old('title') }}">
-			@error('title')
-				<div class="__error__"> {{ $message }} </div>
-			@enderror
 
-		<label for="content"> Conteúdo: </label>
-		<textarea name="content" id="content" cols="40" rows="10" placeholder="Conteúdo" 
-		style="resize: vertical; max-height: 300px;">{{ old('content') }}</textarea>
-			@error('content')
-				<div class="__error__"> {{ $message }} </div>
-			@enderror
+		<hr>
+		<br>
+		<div class="container">
+		<h2> Criar nova postagem </h2>
+		 <form method="post" action="{{ route('posts.store') }}" enctype="multipart/form-data">
+			 	@csrf	
+			 	<label for="title"> Título: </label>
+				<input type="text" name="title" id="title" placeholder="Título" value="{{ old('title') }}">
+					@error('title')
+						<div class="__error__"> {{ $message }} </div>
+					@enderror
 
-		<button type="submit"> Criar </button>
-</form>
-</div>
+			 	<label for="image"> Imagem: </label>
+				<input type="file" name="image" id="title">
+					@error('image')
+						<div class="__error__"> {{ $message }} </div>
+					@enderror
+
+
+				<label for="content"> Conteúdo: </label>
+				<textarea name="content" id="content" cols="40" rows="10" placeholder="Conteúdo" 
+				style="resize: vertical; max-height: 300px;">{{ old('content') }}</textarea>
+					@error('content')
+						<div class="__error__"> {{ $message }} </div>
+					@enderror
+
+
+
+
+				<button type="submit"> Criar </button>
+		</form>
+		</div>
+	@endsection
